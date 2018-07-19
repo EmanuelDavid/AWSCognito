@@ -46,11 +46,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.CognitoIdentity.3.3.2.14\lib\net45\AWSSDK.CognitoIdentity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="AWSSDK.CognitoIdentityProvider, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.CognitoIdentityProvider.3.3.10.4\lib\net45\AWSSDK.CognitoIdentityProvider.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.Core.3.3.24.3\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.Extensions.CognitoAuthentication, Version=0.9.3.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Extensions.CognitoAuthentication.0.9.4\lib\net45\AWSSDK.Extensions.CognitoAuthentication.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AWSSDK.SecurityToken, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.SecurityToken.3.3.2.3\lib\net45\AWSSDK.SecurityToken.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -167,7 +179,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="AWS\CognitoInit.cs" />
-    <Compile Include="AWS\CognitoUser.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -232,7 +243,9 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.CognitoIdentity.3.3.2.14\analyzers\dotnet\cs\AWSSDK.CognitoIdentity.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.CognitoIdentityProvider.3.3.10.4\analyzers\dotnet\cs\AWSSDK.CognitoIdentityProvider.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.SecurityToken.3.3.2.3\analyzers\dotnet\cs\AWSSDK.SecurityToken.CodeAnalysis.dll" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

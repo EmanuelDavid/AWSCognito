@@ -1,5 +1,6 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Amazon.Extensions.CognitoAuthentication;
 using System.Configuration;
 using System.Threading.Tasks;
 
@@ -13,25 +14,42 @@ namespace CognitoSampleApp.AWS
         private readonly string _poolId = ConfigurationManager.AppSettings["USERPOOL_ID"];
 
 
-        public Task CreateAsync(CognitoUser user)
+        public void CreateAsync(CognitoUser user)
         {
-            // Register the user using Cognito
-            var signUpRequest = new SignUpRequest
-            {
-                ClientId = ConfigurationManager.AppSettings["CLIENT_ID"],
-                Password = user.Password,
-                Username = user.Email,
+            //// Register the user using Cognito
+            //var signUpRequest = new SignUpRequest
+            //{
+            //    ClientId = ConfigurationManager.AppSettings["CLIENT_ID"],
+            //    Password = user.Password,
+            //    Username = user.Email,
 
+            //};
+
+            //var emailAttribute = new AttributeType
+            //{
+            //    Name = "email",
+            //    Value = user.Email
+            //};
+            //signUpRequest.UserAttributes.Add(emailAttribute);
+
+            //SignUpResponse result = _client.SignUpAsync(signUpRequest).Result;
+
+        }
+
+        public async Task GetCredsAsync()
+        {
+            AmazonCognitoIdentityProviderClient provider =
+                new AmazonCognitoIdentityProviderClient(new Amazon.Runtime.AnonymousAWSCredentials());
+            CognitoUserPool userPool = new CognitoUserPool(ConfigurationManager.AppSettings["USERPOOL_ID"], ConfigurationManager.AppSettings["CLIENT_ID"], provider);
+            CognitoUser user = new CognitoUser("username", ConfigurationManager.AppSettings["CLIENT_ID"], userPool, provider);
+            InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
+            {
+                Password = "userPassword"
             };
 
-            var emailAttribute = new AttributeType
-            {
-                Name = "email",
-                Value = user.Email
-            };
-            signUpRequest.UserAttributes.Add(emailAttribute);
+            AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
+            var accessToken = authResponse.AuthenticationResult.AccessToken;
 
-            return _client.SignUpAsync(signUpRequest);
         }
     }
 }

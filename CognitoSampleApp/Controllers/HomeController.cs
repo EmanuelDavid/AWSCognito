@@ -1,15 +1,15 @@
 ﻿using CognitoSampleApp.AWS;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace CognitoSampleApp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             CognitoInit awsInit = new CognitoInit();
-            CognitoUser user = new CognitoUser() { UserName= "testUser", Password="something.Patimio.13" };
-            awsInit.CreateAsync(user);
+            await awsInit.GetCredsAsync();
             return View();
         }
 
