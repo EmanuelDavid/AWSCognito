@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using CognitoSampleApp.AWS;
 using System.Web.Mvc;
 
 namespace CognitoSampleApp.Controllers
@@ -10,6 +7,9 @@ namespace CognitoSampleApp.Controllers
     {
         public ActionResult Index()
         {
+            CognitoInit awsInit = new CognitoInit();
+            CognitoUser user = new CognitoUser() { UserName= "testUser", Password="something.Patimio.13" };
+            awsInit.CreateAsync(user);
             return View();
         }
 
