@@ -9,10 +9,11 @@ namespace CognitoSampleApp.Controllers
         public async Task<ActionResult> Index()
         {
             CognitoInit awsInit = new CognitoInit();
-            await awsInit.GetCredsAsync();
+            await awsInit.LoginUserAsync();
             return View();
         }
 
+        [Route("/home/login")]
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
