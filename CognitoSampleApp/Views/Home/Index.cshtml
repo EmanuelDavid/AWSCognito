@@ -1,4 +1,7 @@
-﻿@{
+﻿@using CognitoSampleApp.Models
+@model LoginViewModel
+
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -35,29 +38,27 @@
     </div>
 
     <div class="col-md-3">
-        <form action="/home/Login" method="post">
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post, new
+        { enctype = "multipart/form-data" }))
+        {
             <div class="imgcontainer">
                 <img src="~/Content/Images/login.png" alt="Avatar" class="avatar">
             </div>
-
             <div class="container">
                 <div class="c_user_pass">
-                    <label for="uname"><b>Username</b></label>
-                    <input type="text" placeholder="Enter Username" name="username" required>
+                    @Html.LabelFor(m => m.Username)
+                    @Html.TextBoxFor(m => m.Username@*, new { @Value = Model.Username }*@)
 
-                    <br />
-                    <label for="psw"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="pass" required>
 
+                    @Html.LabelFor(m => m.Password)
+                    @Html.Password("password")
                 </div>
                 <button type="submit">Login</button>
-                <label>
-                    <input type="checkbox" checked="checked" name="remember"> Remember me
-                </label>
-
-                <div class="viewBag">@ViewBag.LoginStatus</div>
             </div>
-            @Html.ActionLink("Forgot Password", "RequestPasswordReset", "Home")
-        </form>
+            <div class="viewBag">@ViewBag.LoginStatus</div>
+            @Html.ActionLink("Forgot Password", "RequestPasswordReset", "Home", new { Username = "da1vid" }, null)
+
+        }
+
     </div>
 </div>

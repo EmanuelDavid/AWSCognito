@@ -55,15 +55,12 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Login(FormCollection collection)
+        public async Task<ActionResult> Login(LoginViewModel model)
         {
-            string username = Convert.ToString(collection["username"]);
-            string passWord = Convert.ToString(collection["pass"]);
-
-            string loginResult = await LoginUserAsync(username, passWord);
+            string loginResult = await LoginUserAsync(model.Username, model.Password);
             if (loginResult.Equals(ChallengeNameType.NEW_PASSWORD_REQUIRED, StringComparison.Ordinal))
             {
-                return RedirectToAction("NewPasswordRequired", new { username });
+                return RedirectToAction("NewPasswordRequired", new { model.Username });
             }
             if (!String.IsNullOrWhiteSpace(loginResult))
             {
@@ -100,7 +97,7 @@ namespace CognitoSampleApp.Controllers
             return View();
         }
 
-        public async Task<ActionResult> RequestPasswordReset()
+        public async Task<ActionResult> RequestPasswordReset( string Username)
         {
             CognitoInit awsInit = new CognitoInit();
             try
