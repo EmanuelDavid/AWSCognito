@@ -1,9 +1,11 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
+using Amazon.Runtime;
 using CognitoSampleApp.AWS;
 using CognitoSampleApp.Models;
 using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -69,6 +71,7 @@ namespace CognitoSampleApp.Controllers
             }
 
             ViewBag.LoginStatus = "You are now logged in!";
+            
             return RedirectToAction("Home");
         }
 
@@ -172,6 +175,7 @@ namespace CognitoSampleApp.Controllers
                 }
                 if (String.IsNullOrWhiteSpace(authResponse.ChallengeName))
                 {
+                    GetCredentials(authResponse.AuthenticationResult);
                     return authResponse.AuthenticationResult.AccessToken;
                 }
             }
@@ -180,6 +184,16 @@ namespace CognitoSampleApp.Controllers
                 return e.Message;
             }
             return "Login didn't succeded!";
+        }
+
+
+        private AWSCredentials GetCredentials(AuthenticationResultType authenticationResult)
+        {
+            Amazon.CognitoIdentity.CognitoAWSCredentials credentials = new Amazon.CognitoIdentity.CognitoAWSCredentials(ConfigurationManager.AppSettings["IDENITYPOOL_ID"], FallbackRegionFactory.GetRegionEndpoint());
+
+            credentials.AddLogin(ConfigurationManager.AppSettings["IDENITY_PROVIDER"], authenticationResult.IdToken);
+
+            return credentials;
         }
     }
 }
