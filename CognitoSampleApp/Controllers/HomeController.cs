@@ -1,4 +1,5 @@
 ﻿using Amazon.CognitoIdentityProvider;
+using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
 using CognitoSampleApp.AWS;
 using System;
@@ -12,6 +13,44 @@ namespace CognitoSampleApp.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SignUp(FormCollection collection)
+        {
+            //TODO : server and client validation on this fields
+            string username = Convert.ToString(collection["username"]);
+            string passWord = Convert.ToString(collection["pass"]);
+            string email = Convert.ToString(collection["email"]);
+
+            CognitoInit awsInit = new CognitoInit();
+
+            try
+            {
+                SignUpRequest signUpRequest = new SignUpRequest()
+                {
+                    ClientId = awsInit.ClientId,
+                    Password = passWord,
+                    Username = username
+                };
+                AttributeType emailAttribute = new AttributeType()
+                {
+                    Name = "email",
+                    Value = email
+                };
+                signUpRequest.UserAttributes.Add(emailAttribute);
+
+                var signUpResult = await awsInit.Client.SignUpAsync(signUpRequest);
+            }
+            catch (Exception ex)
+            {
+                string message = ex.Message;
+                ViewBag.SignInStatus = $"Sign up error: {ex.Message}";
+                return View("Index");
+            }
+
+            ViewBag.LoginStatus = "Your accouant has been created!";
+            return RedirectToAction("Home");
         }
 
         [HttpPost]
@@ -31,6 +70,7 @@ namespace CognitoSampleApp.Controllers
                 return View("Index");
             }
 
+            ViewBag.LoginStatus = "You are now logged in!";
             return RedirectToAction("Home");
         }
 
@@ -81,7 +121,7 @@ namespace CognitoSampleApp.Controllers
             try
             {
                 AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
-                if (authResponse.ChallengeName.ToString().Equals(ChallengeNameType.NEW_PASSWORD_REQUIRED, StringComparison.OrdinalIgnoreCase))
+                if (authResponse.ChallengeName != null && authResponse.ChallengeName.ToString().Equals(ChallengeNameType.NEW_PASSWORD_REQUIRED, StringComparison.OrdinalIgnoreCase))
                 {
                     if (String.IsNullOrWhiteSpace(newPassword))
                     {
