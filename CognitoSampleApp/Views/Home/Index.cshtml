@@ -57,7 +57,7 @@
 
                 <div class="viewBag">@ViewBag.LoginStatus</div>
             </div>
-            <span class="psw"> <a href="#"> Forgot  password?</a></span>
+            @Html.ActionLink("Forgot Password", "RequestPasswordReset", "Home")
         </form>
     </div>
 </div>

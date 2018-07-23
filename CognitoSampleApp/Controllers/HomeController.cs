@@ -2,6 +2,7 @@
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
 using CognitoSampleApp.AWS;
+using CognitoSampleApp.Models;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -62,7 +63,7 @@ namespace CognitoSampleApp.Controllers
             string loginResult = await LoginUserAsync(username, passWord);
             if (loginResult.Equals(ChallengeNameType.NEW_PASSWORD_REQUIRED, StringComparison.Ordinal))
             {
-                return RedirectToAction("ResetPassword", new { username });
+                return RedirectToAction("NewPasswordRequired", new { username });
             }
             if (!String.IsNullOrWhiteSpace(loginResult))
             {
@@ -75,7 +76,7 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult ResetPassword(string username)
+        public ActionResult NewPasswordRequired(string username)
         {
             //ResetPasswordUser user = new ResetPasswordUser { UserName = username };
             ViewBag.Username = username;
@@ -83,7 +84,7 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> ResetPassword(FormCollection collection)
+        public async Task<ActionResult> NewPasswordRequired(FormCollection collection)
         {
             string username = Convert.ToString(collection["username"]);
             string passWord = Convert.ToString(collection["pass"]);
@@ -97,6 +98,48 @@ namespace CognitoSampleApp.Controllers
         public ActionResult Home()
         {
             return View();
+        }
+
+        public async Task<ActionResult> RequestPasswordReset()
+        {
+            CognitoInit awsInit = new CognitoInit();
+            try
+            {
+              await  awsInit.Client.ForgotPasswordAsync(new ForgotPasswordRequest() { ClientId = awsInit.ClientId, Username = "da1vid" });
+            }
+            catch(Exception e)
+            {
+                ViewBag.LoginStatus = e.Message;
+                return RedirectToAction("Home");
+            }
+            ViewBag.Status = "A confirmation code was sent to you re mail";
+            return View();
+        }
+
+        /// <summary>
+        /// Enter verification code received on mail or sms to proceed changing password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> ConfirmForgotPassword(ConfirmResetPassword model)
+        {
+            CognitoInit awsInit = new CognitoInit();
+            try
+            {
+                var result = await awsInit.Client.ConfirmForgotPasswordAsync(new ConfirmForgotPasswordRequest { ClientId = awsInit.ClientId, Username = model.Username, Password = model.Password, ConfirmationCode = model.VerificationCode });
+                if(result.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    ViewBag.Status = "You re password has been changed";
+                }
+            }
+            catch (Exception e)
+            {
+                ViewBag.LoginStatus = e.Message;
+                return RedirectToAction("Home");
+            }
+
+            return RedirectToAction("Home");
         }
 
         /// <summary>
@@ -123,6 +166,7 @@ namespace CognitoSampleApp.Controllers
                 AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
                 if (authResponse.ChallengeName != null && authResponse.ChallengeName.ToString().Equals(ChallengeNameType.NEW_PASSWORD_REQUIRED, StringComparison.OrdinalIgnoreCase))
                 {
+                    //This case is when a user is created by admin form portal
                     if (String.IsNullOrWhiteSpace(newPassword))
                     {
                         authResponse = await user.RespondToNewPasswordRequiredAsync(new RespondToNewPasswordRequiredRequest { SessionID = authResponse.SessionID, NewPassword = "some.PATIuite.13" });
