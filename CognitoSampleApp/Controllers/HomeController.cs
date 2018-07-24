@@ -58,7 +58,7 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpPost]
-        [CognitoAuthentificationFilter]
+        [Authorize]
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             string loginResult = await LoginUserAsync(model.Username, model.Password);
