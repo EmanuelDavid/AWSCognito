@@ -9,6 +9,7 @@ namespace CognitoSampleApp.AWS
 {
     public class CognitoInit
     {
+
         public readonly AmazonCognitoIdentityProviderClient Client =
             new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), FallbackRegionFactory.GetRegionEndpoint());
         public readonly string ClientId = ConfigurationManager.AppSettings["CLIENT_ID"];

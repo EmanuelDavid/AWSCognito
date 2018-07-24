@@ -3,6 +3,7 @@ using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
 using Amazon.Runtime;
 using CognitoSampleApp.AWS;
+using CognitoSampleApp.Filters;
 using CognitoSampleApp.Models;
 using System;
 using System.Configuration;
@@ -57,6 +58,7 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpPost]
+        [CognitoAuthentificationFilter]
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             string loginResult = await LoginUserAsync(model.Username, model.Password);
@@ -152,6 +154,8 @@ namespace CognitoSampleApp.Controllers
         /// <returns></returns>
         private async Task<string> LoginUserAsync(string username, string password, string newPassword = null)
         {
+            var a = FallbackRegionFactory.GetRegionEndpoint();
+
             CognitoInit awsInit = new CognitoInit();
 
             CognitoUserPool userPool = new CognitoUserPool(awsInit.PoolId, awsInit.ClientId, awsInit.Client);
@@ -175,7 +179,7 @@ namespace CognitoSampleApp.Controllers
                 }
                 if (String.IsNullOrWhiteSpace(authResponse.ChallengeName))
                 {
-                    GetCredentials(authResponse.AuthenticationResult);
+                  //6  GetCredentials(authResponse.AuthenticationResult);
                     return authResponse.AuthenticationResult.AccessToken;
                 }
             }
