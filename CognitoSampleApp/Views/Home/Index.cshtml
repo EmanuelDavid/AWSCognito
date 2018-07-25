@@ -5,10 +5,26 @@
     ViewBag.Title = "Home Page";
 }
 
+@section header{
+    <script type="text/javascript">
+            function getData() {
+                    $.ajax({
+                        url: "@(Url.Action("GetData", "Home"))",
+                        type: "GET",
+                        success: function (result) {
+                            window.location = '@Url.Action("GetData", "Home")'
+                        },
+                        headers: { "Authorization": "@ViewBag.LoginStatus" }
+                    });
+            };
+    </script>
+}
 
 <div class="row">
     <div class="col-md-6">
         <h2>Amazon cognito demo</h2>
+
+        <button id="testJwt" name="testJwt" onclick="getData()"> GetData </button>
     </div>
 
     <div class="col-md-3">

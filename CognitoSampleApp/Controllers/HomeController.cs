@@ -58,7 +58,6 @@ namespace CognitoSampleApp.Controllers
         }
 
         [HttpPost]
-        [CognitoAuthentificationFilter]
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             string loginResult = await LoginUserAsync(model.Username, model.Password);
@@ -145,6 +144,16 @@ namespace CognitoSampleApp.Controllers
         }
 
         /// <summary>
+        /// Test authorization attribute
+        /// </summary>
+        /// <returns></returns>
+        [JwtAuthorizationAttrribute]
+        public ActionResult GetData()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// Try to login to aws using cognito
         /// If user  has not changed the password then he will be redirected to password change
         /// </summary>
@@ -179,8 +188,8 @@ namespace CognitoSampleApp.Controllers
                 }
                 if (String.IsNullOrWhiteSpace(authResponse.ChallengeName))
                 {
-                  //6  GetCredentials(authResponse.AuthenticationResult);
-                    return authResponse.AuthenticationResult.AccessToken;
+                   // GetCredentials(authResponse.AuthenticationResult);
+                    return authResponse.AuthenticationResult.IdToken;
                 }
             }
             catch (Exception e)
